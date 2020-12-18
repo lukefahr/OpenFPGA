@@ -1,9 +1,12 @@
 # Naming convention for VPR architecture files
 Please reveal the following architecture features in the names to help quickly spot architecture files.
 
-- k<lut\_size>\_<frac>: Look-Up Table (LUT) size of FPGA. If you have fracturable LUTs or multiple LUT circuits, this should be largest input size. The keyword 'frac' is to specify if fracturable LUT is used or not.
+- k<lut\_size>\_<frac><Native>: Look-Up Table (LUT) size of FPGA. If you have fracturable LUTs or multiple LUT circuits, this should be largest input size. 
+  * The keyword 'frac' is to specify if fracturable LUT is used or not.
+  * The keyword 'Native' is to specify if fracturable LUT design is a native one (without mode switch) or a standard one (with mode switch).
 - N<le\_size>: Number of logic elements for a CLB. If you have multiple CLB architectures, this should be largest number.
-- tileable: If the routing architecture is tileable or not.
+- tileable<IO>: If the routing architecture is tileable or not. 
+  * The keyword 'IO' specifies if the I/O tile is tileable or not
 - adder\_chain: If hard adder/carry chain is used inside CLBs
 - register\_chain: If shift register chain is used inside CLBs
 - scan\_chain: If scan chain testing infrastructure is used inside CLBs
@@ -13,5 +16,9 @@ Please reveal the following architecture features in the names to help quickly s
 - multi\_io\_capacity: If I/O capacity is different on each side of FPGAs.
 - reduced\_io: If I/Os only appear a certain or multiple sides of FPGAs 
 - <feature\_size>: The technology node which the delay numbers are extracted from.
+- TileOrgz<Type>: How tile is organized. 
+  * Top-left (Tl): the pins of a tile are placed on the top side and left side only
+  * Top-right (Tr): the pins of a tile are placed on the top side and right side only
+  * Bottom-right (Br): the pins of a tile are placed on the bottom side and right side only
 
 Other features are used in naming should be listed here.

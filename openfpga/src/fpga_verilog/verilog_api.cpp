@@ -153,6 +153,7 @@ void fpga_verilog_testbench(const ModuleManager &module_manager,
                             const AtomContext &atom_ctx,
                             const PlacementContext &place_ctx,
                             const IoLocationMap &io_location_map,
+                            const FabricGlobalPortInfo &fabric_global_port_info,
                             const VprNetlistAnnotation &netlist_annotation,
                             const CircuitLibrary &circuit_lib,
                             const SimulationSetting &simulation_setting,
@@ -168,20 +169,16 @@ void fpga_verilog_testbench(const ModuleManager &module_manager,
   /* Create directories */
   create_directory(src_dir_path);
 
-  /* TODO: check if this works here. This function was in fabric generator */
+  /* Output preprocessing flags for HDL simulations */
   print_verilog_simulation_preprocessing_flags(std::string(src_dir_path),
                                                options);
-
-  /* Collect global ports from the circuit library:
- * TODO: should we place this in the OpenFPGA context?
- */
-  std::vector<CircuitPortId> global_ports = find_circuit_library_global_ports(circuit_lib);
 
   /* Generate wrapper module for FPGA fabric (mapped by the input benchmark and pre-configured testbench for verification */
   if (true == options.print_formal_verification_top_netlist()) {
     std::string formal_verification_top_netlist_file_path = src_dir_path + netlist_name + std::string(FORMAL_VERIFICATION_VERILOG_FILE_POSTFIX);
     print_verilog_preconfig_top_module(module_manager, bitstream_manager,
-                                       circuit_lib, global_ports,
+                                       config_protocol,
+                                       circuit_lib, fabric_global_port_info,
                                        atom_ctx, place_ctx, io_location_map,
                                        netlist_annotation,
                                        netlist_name,
@@ -205,15 +202,15 @@ void fpga_verilog_testbench(const ModuleManager &module_manager,
     std::string top_testbench_file_path = src_dir_path + netlist_name + std::string(AUTOCHECK_TOP_TESTBENCH_VERILOG_FILE_POSTFIX);
     print_verilog_top_testbench(module_manager,
                                 bitstream_manager, fabric_bitstream,
+                                circuit_lib,
                                 config_protocol,
-                                circuit_lib, global_ports,
+                                fabric_global_port_info,
                                 atom_ctx, place_ctx, io_location_map,
                                 netlist_annotation,
                                 netlist_name,
                                 top_testbench_file_path,
                                 simulation_setting,
-                                options.fast_configuration(),
-                                options.explicit_port_mapping());
+                                options);
   }
 
   /* Generate exchangeable files which contains simulation settings */
@@ -235,6 +232,7 @@ void fpga_verilog_testbench(const ModuleManager &module_manager,
   /* Generate a Verilog file including all the netlists that have been generated */
   print_verilog_testbench_include_netlists(src_dir_path,
                                            netlist_name,
+                                           options.fabric_netlist_file_path(),
                                            options.reference_benchmark_file_path());
 }
 
